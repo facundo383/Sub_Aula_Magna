@@ -6,27 +6,19 @@ import re
 from PIL import Image, ImageOps
 
 carpeta_actual = os.path.dirname(os.path.abspath(__file__))
-ruta = os.path.join(carpeta_actual, "python.xlsx")
 CARPETA_IMAGENES = os.path.join(carpeta_actual, "CARPETA_IMAGENES")
 
 st.title("Eleccion para el cartel del Aula Magna")
+
+# Inicializar un DataFrame en la memoria de la sesión si no existe
+if "df_votos" not in st.session_state:
+    st.session_state.df_votos = pd.DataFrame(columns=["Nombre", "Equipo", "DNI"])
 
 nombre_usuario = st.text_input("Por favor, ingresa tu nombre:")
 documento_texto = st.text_input("Por favor, ingrese su DNI:", max_chars=8)
 
 if documento_texto and not documento_texto.isdigit():
     st.error("El DNI solo debe contener números.")
-
-# Cargar histórico si existe
-if os.path.exists(ruta):
-    try:
-        df_historico = pd.read_excel(ruta, sheet_name='equipo')
-        df_historico['Nombre'] = df_historico['Nombre'].astype(str).str.strip()
-        df_historico['Equipo'] = df_historico['Equipo'].astype(str).str.strip()
-    except Exception:
-        df_historico = pd.DataFrame(columns=["Nombre", "Equipo", "DNI"])
-else:
-    df_historico = pd.DataFrame(columns=["Nombre", "Equipo", "DNI"])
 
 opciones_equipos = {
     "Cartel numero 1": ("FOTO1.jpeg", 0),
@@ -58,44 +50,51 @@ if os.path.exists(ruta_imagen_completa):
 else:
     st.warning(f"No se encontró la imagen '{archivo_imagen}' en la carpeta '{CARPETA_IMAGENES}'.")
 
-if st.button("Guardar Todo"):
+if st.button("Guardar Voto"):
     if nombre_usuario and documento_texto:
         patron_letras = r"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$"
         if not re.match(patron_letras, nombre_usuario):
             st.error("Error: El nombre solo puede contener letras.")
             st.stop()
             
-        nombres_existentes = df_historico['Nombre'].str.lower().values
+        nombres_existentes = st.session_state.df_votos['Nombre'].str.lower().values
         if nombre_usuario.lower() in nombres_existentes:
             st.error(f"El nombre '{nombre_usuario}' ya se encuentra registrado.")
             st.stop()
             
         df_nuevo = pd.DataFrame({
             "Nombre": [nombre_usuario],
-            "Equipo": [equipo_elegido],   
+            "Equipo": [equipo_elegido],    
             "DNI": [documento_texto],
         })
-        df_final = pd.concat([df_historico, df_nuevo], ignore_index=True)
-
-        # Guardar en Excel localmente para la sesión
-        try:
-            with pd.ExcelWriter(ruta, engine="openpyxl") as writer:
-                df_final.to_excel(writer, index=False, sheet_name='equipo')
-            st.success(f"¡Excelente! '{nombre_usuario}' se guardó correctamente.")
-        except Exception as e:
-            st.error(f"No se pudo guardar en el archivo local: {e}")
-
-        # Generar archivo en memoria para descarga directa del usuario
-        buffer_excel = io.BytesIO()
-        with pd.ExcelWriter(buffer_excel, engine='openpyxl') as writer:
-            df_final.to_excel(writer, index=False, sheet_name='equipo')
-        buffer_excel.seek(0)
         
-        st.download_button(
-            label="Descargar datos en Excel actualizado",
-            data=buffer_excel,
-            file_name="registro_usuarios.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        )
+        # Agregar el voto a la memoria temporal de la sesión
+        st.session_state.df_votos = pd.concat([st.session_state.df_votos, df_nuevo], ignore_index=True)
+        st.success(f"¡Excelente! '{nombre_usuario}' tu voto ha sido registrado con éxito.")
     else:
         st.warning("Por favor, completa todos los campos (nombre y DNI).")
+
+# --- PANEL DE ADMINISTRACIÓN (Para descargar el Excel) ---
+st.markdown("---")
+with st.expander("Panel de Administrador (Descargar Excel)"):
+    password = st.text_input("Contraseña de administrador:", type="password")
+    # Puedes cambiar "1234" por la contraseña que prefieras
+    if password == "1234":
+        if not st.session_state.df_votos.empty:
+            st.write(f"Total de votos registrados en esta sesión: {len(st.session_state.df_votos)}")
+            
+            buffer_excel = io.BytesIO()
+            with pd.ExcelWriter(buffer_excel, engine='openpyxl') as writer:
+                st.session_state.df_votos.to_excel(writer, index=False, sheet_name='equipo')
+            buffer_excel.seek(0)
+            
+            st.download_button(
+                label="📥 Descargar Excel con todos los votos",
+                data=buffer_excel,
+                file_name="registro_usuarios.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            )
+        else:
+            st.info("Aún no hay votos registrados en la sesión actual.")
+    elif password != "":
+        st.error("Contraseña incorrecta.")
