@@ -1,0 +1,20 @@
+streamlit    pip install streamlit
+pandas    pip install pandas
+openpyxl    pip install openpyxl
+pillow     pip install pillow
+msoffcrypto-tool     pip install msoffcrypto-tool
+qrcode    pip install qrcode[pil]
+pyngrok    pip install pyngrok
+
+
+pip install streamlit pandas openpyxl pillow msoffcrypto-tool qrcode[pil] pyngrok
+
+1. [SOLO LA PRIMERA VEZ] Configurar el Token de Ngrok:
+   python -m pyngrok config add-authtoken (INSETAR EL TOKEN AQUI)
+
+2. En la PRIMERA terminal, iniciar el sitio web:
+   streamlit run part1.py
+   (Mantener esta ventana abierta)
+
+3. En una SEGUNDA terminal, generar el código QR y abrir el túnel:
+   python qr.py
