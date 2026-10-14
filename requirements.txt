@@ -2,3 +2,4 @@ pandas==3.0.6
 Pillow==12.3.0
 qrcode==8.2
 streamlit==1.58.0
+msoffcrypto-tool==26.2.1
