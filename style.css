@@ -1,0 +1,101 @@
+/* Importar fuentes de Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Redaction+35:ital,wght@0,400;0,700;1,400&display=swap');
+
+/* 1. Fondo de la página con degradado descendente de 3 colores */
+.stApp {
+    background: linear-gradient(to bottom, #ff5400, #00b4d8, #03045e) !important;
+    background-attachment: fixed !important;
+}
+
+/* Franja superior transparente */
+header[data-testid="stHeader"] {
+    background-color: transparent !important;
+}
+
+/* 2. Panel lateral (la barra que se abre) fijo con el color #ff8500 */
+section[data-testid="stSidebar"], 
+section[data-testid="stSidebar"] > div {
+    background-color: #ff8500 !important;
+}
+
+/* 3. Campos de texto y selectores principales (Cerrados) */
+.stTextInput input, 
+.stSelectbox div[data-baseweb="select"] {
+    background-color: #0077b6 !important;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    border-radius: 4px;
+}
+
+/* Forzar la personalización interna de BaseWeb para el selectbox */
+div[data-baseweb="select"],
+div[data-baseweb="select"] > div {
+    background-color: #0077b6 !important;
+    color: #ffffff !important;
+}
+
+div[data-baseweb="select"] * {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+}
+
+div[data-baseweb="select"] {
+    border-color: #005f87 !important;
+}
+
+/* 4. Menús desplegables (Opciones abiertas que flotan en pantalla) */
+div[data-baseweb="popover"], 
+div[data-baseweb="menu"], 
+ul[data-baseweb="menu"],
+div[role="listbox"],
+ul[role="listbox"] {
+    background-color: #0077b6 !important;
+}
+
+div[role="option"], 
+li[role="option"],
+[data-baseweb="option"] {
+    background-color: #0077b6 !important;
+    color: #ffffff !important;
+}
+
+div[role="option"]:hover, 
+li[role="option"]:hover,
+[data-baseweb="option"]:hover {
+    background-color: #005f87 !important; /* Tono más oscuro al pasar el cursor */
+    color: #ffffff !important;
+}
+
+/* 5. Botón de guardado con el mismo color de los campos de texto (#0077b6) */
+div.stButton > button {
+    background-color: #0077b6 !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+div.stButton > button:hover {
+    background-color: #005f87 !important;
+    color: #ffffff !important;
+}
+
+/* Tipografía general (Poppins) y etiquetas blancas */
+html, body, [class*="css"], label, .stSelectbox label, section[data-testid="stSidebar"] label {
+    font-family: 'Poppins', sans-serif;
+    color: #ffffff !important;
+}
+
+/* Títulos principales (Oswald) */
+h1, h2, h3, .titulo-principal {
+    font-family: 'Oswald', sans-serif !important;
+    color: #ffffff !important;
+}
+
+/* Control del salto de línea del título principal */
+.titulo-principal {
+    display: inline-block;
+    word-break: break-word;
+    line-height: 1.2;
+}
